@@ -56,6 +56,6 @@ resource "aws_instance" "web" {
   key_name                    = "ec2" # replace with your existing AWS key pair
 
   tags = {
-    Name = "TerraformWebInstance"
+    Name = "Terraform-WebInstance-jenkins"
   }
 }
