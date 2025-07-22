@@ -10,6 +10,6 @@ module "ec2" {
   source        = "../../modules/ec2"
   ami           = var.ami
   instance_type = var.instance_type
-  subnet_id     = module.vpc.public.id
+  subnet_id     = module.vpc.subnet_id
   name          = "dev-ec2"
 }
