@@ -14,25 +14,16 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 
-resource "aws_security_group" "web_sg" {
-  name        = "web_sg"
-  description = "Allow SSH and HTTP"
-  vpc_id      = aws_vpc.main.id
+resource "aws_security_group" "instance_sg" {
+  name        = "dev-instance-sg"
+  description = "Allow inbound traffic"
+  vpc_id      = module.vpc.vpc_id
 
   ingress {
-    description = "SSH"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "HTTP"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"] # ❗ TEMP for testing. Replace later with Jenkins EC2 IP
   }
 
   egress {
@@ -43,9 +34,10 @@ resource "aws_security_group" "web_sg" {
   }
 
   tags = {
-    Name = "WebSecurityGroup"
+    Name = "dev-instance-sg"
   }
 }
+
 
 resource "aws_instance" "web" {
   ami                         = "ami-020cba7c55df1f615" # Ubuntu 22.04 LTS in ap-south-1
