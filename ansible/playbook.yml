@@ -4,7 +4,6 @@
   become: yes
 
   tasks:
-
     - name: Update and upgrade apt packages
       apt:
         upgrade: dist
@@ -12,19 +11,27 @@
 
     - name: Install basic dependencies
       apt:
-        name: ['apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'gnupg', 'lsb-release']
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - gnupg
+          - lsb-release
         state: present
 
     - name: Add Docker GPG key
       shell: |
-        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+        | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
     - name: Add Docker repo
       shell: |
         echo \
         "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
         https://download.docker.com/linux/ubuntu \
-        $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+        $(lsb_release -cs) stable" \
+        | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
     - name: Update apt again
       apt:
@@ -41,7 +48,20 @@
         enabled: true
         state: started
 
-    - name: Pull Nginx image
+    - name: Stop any host nginx service to free port 80
+      systemd:
+        name: nginx
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+
+    - name: Remove existing nginx container if present
+      docker_container:
+        name: nginx
+        state: absent
+        force_kill: true
+
+    - name: Pull Nginx Docker image
       docker_image:
         name: nginx
         source: pull
@@ -53,3 +73,4 @@
         state: started
         ports:
           - "80:80"
+        pull: yes
