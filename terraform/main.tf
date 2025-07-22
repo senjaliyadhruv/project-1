@@ -43,7 +43,7 @@ resource "aws_instance" "web" {
   ami                         = "ami-020cba7c55df1f615" # Ubuntu 22.04 LTS in ap-south-1
   instance_type               = var.instance_type
   subnet_id                   = aws_subnet.public_subnet.id
-  vpc_security_group_ids      = [aws_security_group.web_sg.id]
+  vpc_security_group_ids      = [aws_security_group.instance_sg.id]
   associate_public_ip_address = true
   key_name                    = "ec2" # replace with your existing AWS key pair
 
